@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍕 Sistema Pizzaria</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px 25px;
+            background: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        .tab-btn.active {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #51cf66;
+        }
+
+        .btn-success:hover {
+            background: #40c057;
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+        }
+
+        .btn-danger:hover {
+            background: #fa5252;
+        }
+
+        .btn-warning {
+            background: #ffd43b;
+            color: #333;
+        }
+
+        .btn-warning:hover {
+            background: #fcc419;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .card-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .card-actions button {
+            flex: 1;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        .response-area {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f1f3f5;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .response-area pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .status-pendente {
+            background: #ffd43b;
+            color: #333;
+        }
+
+        .status-em-preparo {
+            background: #74c0fc;
+            color: white;
+        }
+
+        .status-saiu-para-entrega {
+            background: #a78bfa;
+            color: white;
+        }
+
+        .status-entregue {
+            background: #51cf66;
+            color: white;
+        }
+
+        .status-cancelado {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .item-list {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .alert-success {
+            background: #d3f9d8;
+            color: #2b8a3e;
+            border: 2px solid #51cf66;
+        }
+
+        .alert-error {
+            background: #ffe3e3;
+            color: #c92a2a;
+            border: 2px solid #ff6b6b;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍕 Sistema de Pizzaria</h1>
+            <p>Gerencie pizzas, clientes e pedidos</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab('pizzas')">🍕 Pizzas</button>
+            <button class="tab-btn" onclick="openTab('clientes')">👥 Clientes</button>
+            <button class="tab-btn" onclick="openTab('pedidos')">📦 Pedidos</button>
+        </div>
+
+        <!-- TAB PIZZAS -->
+        <div id="pizzas" class="tab-content active">
+            <h2>Gerenciar Pizzas</h2>
+            
+            <div class="form-group">
+                <h3>Adicionar Nova Pizza</h3>
+                <div class="form-row">
+                    <div>
+                        <label>Nome da Pizza</label>
+                        <input type="text" id="pizzaNome" placeholder="Ex: Margherita">
+                    </div>
+                </div>
+                
+                <label>Ingredientes (separados por vírgula)</label>
+                <textarea id="pizzaIngredientes" rows="3" placeholder="Ex: Molho de tomate, Mussarela, Manjericão"></textarea>
+                
+                <div class="form-row">
+                    <div>
+                        <label>Preço Pequena (R$)</label>
+                        <input type="number" id="pizzaPequena" step="0.01" placeholder="25.00">
+                    </div>
+                    <div>
+                        <label>Preço Média (R$)</label>
+                        <input type="number" id="pizzaMedia" step="0.01" placeholder="35.00">
+                    </div>
+                    <div>
+                        <label>Preço Grande (R$)</label>
+                        <input type="number" id="pizzaGrande" step="0.01" placeholder="45.00">
+                    </div>
+                </div>
+                
+                <button class="btn btn-success" onclick="adicionarPizza()">➕ Adicionar Pizza</button>
+            </div>
+
+            <hr style="margin: 30px 0;">
+
+            <div>
+                <button class="btn" onclick="listarPizzas()">🔄 Atualizar Lista</button>
+                <div id="pizzasList" class="grid"></div>
+            </div>
+        </div>
+
+        <!-- TAB CLIENTES -->
+        <div id="clientes" class="tab-content">
+            <h2>Gerenciar Clientes</h2>
+            
+            <div class="form-group">
+                <h3>Cadastrar Novo Cliente</h3>
+                <div class="form-row">
+                    <div>
+                        <label>Nome Completo *</label>
+                        <input type="text" id="clienteNome" placeholder="João Silva">
+                    </div>
+                    <div>
+                        <label>Telefone *</label>
+                        <input type="text" id="clienteTelefone" placeholder="(11) 98765-4321">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div>
+                        <label>Endereço</label>
+                        <input type="text" id="clienteEndereco" placeholder="Rua das Flores, 123">
+                    </div>
+                    <div>
+                        <label>E-mail</label>
+                        <input type="email" id="clienteEmail" placeholder="joao@email.com">
+                    </div>
+                </div>
+                
+                <button class="btn btn-success" onclick="adicionarCliente()">➕ Cadastrar Cliente</button>
+            </div>
+
+            <hr style="margin: 30px 0;">
+
+            <div>
+                <button class="btn" onclick="listarClientes()">🔄 Atualizar Lista</button>
+                <div id="clientesList" class="grid"></div>
+            </div>
+        </div>
+
+        <!-- TAB PEDIDOS -->
+        <div id="pedidos" class="tab-content">
+            <h2>Gerenciar Pedidos</h2>
+            
+            <div class="form-group">
+                <h3>Criar Novo Pedido</h3>
+                
+                <label>Selecione o Cliente</label>
+                <select id="pedidoCliente">
+                    <option value="">Carregue os clientes primeiro...</option>
+                </select>
+                
+                <div id="itensPedido">
+                    <h4>Itens do Pedido</h4>
+                    <div class="item-list">
+                        <div class="form-row">
+                            <div>
+                                <label>Pizza</label>
+                                <select id="itemPizza1">
+                                    <option value="">Carregue as pizzas primeiro...</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Tamanho</label>
+                                <select id="itemTamanho1">
+                                    <option value="pequena">Pequena</option>
+                                    <option value="media">Média</option>
+                                    <option value="grande">Grande</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Quantidade</label>
+                                <input type="number" id="itemQtd1" value="1" min="1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-success" onclick="criarPedido()">📦 Criar Pedido</button>
+                <button class="btn" onclick="carregarDadosPedido()">🔄 Carregar Pizzas e Clientes</button>
+            </div>
+
+            <hr style="margin: 30px 0;">
+
+            <div>
+                <button class="btn" onclick="listarPedidos()">🔄 Atualizar Pedidos</button>
+                <div id="pedidosList" class="grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        let pizzasData = [];
+        let clientesData = [];
+
+        // Gerenciamento de Tabs
+        function openTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const btns = document.querySelectorAll('.tab-btn');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            btns.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            // Auto-carregar dados ao abrir tab
+            if (tabName === 'pizzas') listarPizzas();
+            if (tabName === 'clientes') listarClientes();
+            if (tabName === 'pedidos') {
+                listarPedidos();
+                carregarDadosPedido();
+            }
+        }
+
+        // Função auxiliar para mostrar alertas
+        function showAlert(message, type = 'success') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            const container = event.target.closest('.tab-content');
+            container.insertBefore(alertDiv, container.firstChild);
+            
+            setTimeout(() => alertDiv.remove(), 3000);
+        }
+
+        // ========== PIZZAS ==========
+        async function adicionarPizza() {
+            const nome = document.getElementById('pizzaNome').value;
+            const ingredientesStr = document.getElementById('pizzaIngredientes').value;
+            const pequena = parseFloat(document.getElementById('pizzaPequena').value);
+            const media = parseFloat(document.getElementById('pizzaMedia').value);
+            const grande = parseFloat(document.getElementById('pizzaGrande').value);
+
+            if (!nome || !ingredientesStr || !pequena || !media || !grande) {
+                showAlert('Preencha todos os campos!', 'error');
+                return;
+            }
+
+            const ingredientes = ingredientesStr.split(',').map(i => i.trim());
+
+            try {
+                const response = await fetch(`${API_URL}/pizzas`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        nome,
+                        ingredientes,
+                        tamanhos: { pequena, media, grande }
+                    })
+                });
+
+                if (response.ok) {
+                    showAlert('Pizza adicionada com sucesso! 🍕');
+                    document.getElementById('pizzaNome').value = '';
+                    document.getElementById('pizzaIngredientes').value = '';
+                    document.getElementById('pizzaPequena').value = '';
+                    document.getElementById('pizzaMedia').value = '';
+                    document.getElementById('pizzaGrande').value = '';
+                    listarPizzas();
+                } else {
+                    showAlert('Erro ao adicionar pizza', 'error');
+                }
+            } catch (error) {
+                showAlert('Erro de conexão com a API', 'error');
+            }
+        }
+
+        async function listarPizzas() {
+            const container = document.getElementById('pizzasList');
+            container.innerHTML = '<div class="loading">Carregando pizzas...</div>';
+
+            try {
+                const response = await fetch(`${API_URL}/pizzas`);
+                pizzasData = await response.json();
+
+                container.innerHTML = '';
+                pizzasData.forEach(pizza => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <h3>🍕 ${pizza.nome}</h3>
+                        <p><strong>Ingredientes:</strong> ${pizza.ingredientes.join(', ')}</p>
+                        <p><strong>Preços:</strong></p>
+                        <p>Pequena: R$ ${pizza.tamanhos.pequena.toFixed(2)}</p>
+                        <p>Média: R$ ${pizza.tamanhos.media.toFixed(2)}</p>
+                        <p>Grande: R$ ${pizza.tamanhos.grande.toFixed(2)}</p>
+                        <div class="card-actions">
+                            <button class="btn btn-danger" onclick="deletarPizza(${pizza.id})">🗑️ Deletar</button>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                container.innerHTML = '<p>Erro ao carregar pizzas. Verifique se a API está rodando.</p>';
+            }
+        }
+
+        async function deletarPizza(id) {
+            if (!confirm('Tem certeza que deseja deletar esta pizza?')) return;
+
+            try {
+                const response = await fetch(`${API_URL}/pizzas/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    showAlert('Pizza deletada com sucesso!');
+                    listarPizzas();
+                }
+            } catch (error) {
+                showAlert('Erro ao deletar pizza', 'error');
+            }
+        }
+
+        // ========== CLIENTES ==========
+        async function adicionarCliente() {
+            const nome = document.getElementById('clienteNome').value;
+            const telefone = document.getElementById('clienteTelefone').value;
+            const endereco = document.getElementById('clienteEndereco').value;
+            const email = document.getElementById('clienteEmail').value;
+
+            if (!nome || !telefone) {
+                showAlert('Nome e telefone são obrigatórios!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/clientes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome, telefone, endereco, email })
+                });
+
+                if (response.ok) {
+                    showAlert('Cliente cadastrado com sucesso! 👤');
+                    document.getElementById('clienteNome').value = '';
+                    document.getElementById('clienteTelefone').value = '';
+                    document.getElementById('clienteEndereco').value = '';
+                    document.getElementById('clienteEmail').value = '';
+                    listarClientes();
+                }
+            } catch (error) {
+                showAlert('Erro ao cadastrar cliente', 'error');
+            }
+        }
+
+        async function listarClientes() {
+            const container = document.getElementById('clientesList');
+            container.innerHTML = '<div class="loading">Carregando clientes...</div>';
+
+            try {
+                const response = await fetch(`${API_URL}/clientes`);
+                clientesData = await response.json();
+
+                container.innerHTML = '';
+                clientesData.forEach(cliente => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <h3>👤 ${cliente.nome}</h3>
+                        <p><strong>📞 Telefone:</strong> ${cliente.telefone}</p>
+                        <p><strong>📍 Endereço:</strong> ${cliente.endereco || 'Não informado'}</p>
+                        <p><strong>📧 E-mail:</strong> ${cliente.email || 'Não informado'}</p>
+                        <div class="card-actions">
+                            <button class="btn btn-danger" onclick="deletarCliente(${cliente.id})">🗑️ Deletar</button>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                container.innerHTML = '<p>Erro ao carregar clientes.</p>';
+            }
+        }
+
+        async function deletarCliente(id) {
+            if (!confirm('Tem certeza que deseja deletar este cliente?')) return;
+
+            try {
+                const response = await fetch(`${API_URL}/clientes/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    showAlert('Cliente deletado com sucesso!');
+                    listarClientes();
+                }
+            } catch (error) {
+                showAlert('Erro ao deletar cliente', 'error');
+            }
+        }
+
+        // ========== PEDIDOS ==========
+        async function carregarDadosPedido() {
+            try {
+                const [pizzasRes, clientesRes] = await Promise.all([
+                    fetch(`${API_URL}/pizzas`),
+                    fetch(`${API_URL}/clientes`)
+                ]);
+
+                pizzasData = await pizzasRes.json();
+                clientesData = await clientesRes.json();
+
+                // Preencher select de clientes
+                const selectCliente = document.getElementById('pedidoCliente');
+                selectCliente.innerHTML = '<option value="">Selecione um cliente</option>';
+                clientesData.forEach(cliente => {
+                    selectCliente.innerHTML += `<option value="${cliente.id}">${cliente.nome}</option>`;
+                });
+
+                // Preencher select de pizzas
+                const selectPizza = document.getElementById('itemPizza1');
+                selectPizza.innerHTML = '<option value="">Selecione uma pizza</option>';
+                pizzasData.forEach(pizza => {
+                    selectPizza.innerHTML += `<option value="${pizza.id}">${pizza.nome}</option>`;
+                });
+
+                showAlert('Dados carregados com sucesso!');
+            } catch (error) {
+                showAlert('Erro ao carregar dados', 'error');
+            }
+        }
+
+        async function criarPedido() {
+            const clienteId = parseInt(document.getElementById('pedidoCliente').value);
+            const pizzaId = parseInt(document.getElementById('itemPizza1').value);
+            const tamanho = document.getElementById('itemTamanho1').value;
+            const quantidade = parseInt(document.getElementById('itemQtd1').value);
+
+            if (!clienteId || !pizzaId) {
+                showAlert('Selecione cliente e pizza!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/pedidos`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        clienteId,
+                        itens: [{ pizzaId, tamanho, quantidade }]
+                    })
+                });
+
+                if (response.ok) {
+                    showAlert('Pedido criado com sucesso! 📦');
+                    listarPedidos();
+                } else {
+                    const error = await response.json();
+                    showAlert(error.erro || 'Erro ao criar pedido', 'error');
+                }
+            } catch (error) {
+                showAlert('Erro de conexão', 'error');
+            }
+        }
+
+        async function listarPedidos() {
+            const container = document.getElementById('pedidosList');
+            container.innerHTML = '<div class="loading">Carregando pedidos...</div>';
+
+            try {
+                const response = await fetch(`${API_URL}/pedidos`);
+                const pedidos = await response.json();
+
+                container.innerHTML = '';
+                pedidos.forEach(pedido => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    
+                    let itensHtml = '';
+                    pedido.itens.forEach(item => {
+                        itensHtml += `<p>• ${item.quantidade}x ${item.nomePizza} (${item.tamanho}) - R$ ${item.preco.toFixed(2)}</p>`;
+                    });
+
+                    card.innerHTML = `
+                        <h3>📦 Pedido #${pedido.id}</h3>
+                        <p><strong>Cliente:</strong> ${pedido.nomeCliente}</p>
+                        <p><strong>Status:</strong> <span class="status-badge status-${pedido.status.replace(/ /g, '-')}">${pedido.status.toUpperCase()}</span></p>
+                        <hr>
+                        ${itensHtml}
+                        <hr>
+                        <p><strong>Total: R$ ${pedido.total.toFixed(2)}</strong></p>
+                        <p><small>Data: ${new Date(pedido.dataPedido).toLocaleString('pt-BR')}</small></p>
+                        <div class="card-actions">
+                            <button class="btn btn-warning" onclick="atualizarStatus(${pedido.id})">📝 Status</button>
+                            <button class="btn btn-danger" onclick="deletarPedido(${pedido.id})">🗑️ Deletar</button>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                container.innerHTML = '<p>Erro ao carregar pedidos.</p>';
+            }
+        }
+
+        async function atualizarStatus(id) {
+            const status = prompt('Digite o novo status:\npendente\nem preparo\nsaiu para entrega\nentregue\ncancelado');
+            
+            if (!status) return;
+
+            try {
+                const response = await fetch(`${API_URL}/pedidos/${id}/status`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: status.toLowerCase() })
+                });
+
+                if (response.ok) {
+                    showAlert('Status atualizado!');
+                    listarPedidos();
+                } else {
+                    showAlert('Status inválido!', 'error');
+                }
+            } catch (error) {
+                showAlert('Erro ao atualizar status', 'error');
+            }
+        }
+
+        async function deletarPedido(id) {
+            if (!confirm('Tem certeza que deseja deletar este pedido?')) return;
+
+            try {
+                const response = await fetch(`${API_URL}/pedidos/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    showAlert('Pedido deletado!');
+                    listarPedidos();
+                }
+            } catch (error) {
+                showAlert('Erro ao deletar pedido', 'error');
+            }
+        }
+
+        // Carregar pizzas ao iniciar
+        window.onload = () => {
+            listarPizzas();
+        };
+    </script>
+</body>
+</html>
